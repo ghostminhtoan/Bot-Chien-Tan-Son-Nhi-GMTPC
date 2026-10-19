@@ -1,12 +1,11 @@
-<#
-.SYNOPSIS
-    Kịch bản Build Trọn Gói Đa Nền Tảng cho Bột Chiên Tân Sơn Nhì POS (GMTPC)
-    Xuất xưởng Windows EXE, Linux Binary + Tar.gz + Deb, và Android Signed APK.
-#>
+# ==============================================================================
+# Bot Chien Tan Son Nhi POS - Multi-Platform Master Build Script
+# Target: Windows Standalone EXE, Linux Binary + Tar.gz + Deb, Android Signed APK
+# ==============================================================================
 
 $ErrorActionPreference = "Stop"
 Write-Host "==========================================================" -ForegroundColor Yellow
-Write-Host " BỘT CHIÊN TÂN SƠN NHÌ POS - MASTER MULTI-PLATFORM BUILD" -ForegroundColor Cyan
+Write-Host " BOT CHIEN TAN SON NHI POS - MASTER MULTI-PLATFORM BUILD" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Yellow
 
 $publishDir = Join-Path $PSScriptRoot "publish"
@@ -16,17 +15,17 @@ if (-not (Test-Path $publishDir)) { New-Item -ItemType Directory -Path $publishD
 if (-not (Test-Path $artifactsDir)) { New-Item -ItemType Directory -Path $artifactsDir -Force | Out-Null }
 
 # 1. BUILD WINDOWS (Single-File Standalone EXE)
-Write-Host "`n[1/3] Đang xuất bản Windows x64 Single-file Standalone EXE..." -ForegroundColor Green
+Write-Host "`n[1/3] Xuat ban Windows x64 Single-file Standalone EXE..." -ForegroundColor Green
 dotnet publish "$PSScriptRoot/BotChienTanSonNhi/BotChienTanSonNhi.Desktop/BotChienTanSonNhi.Desktop.csproj" `
     -c Release -r win-x64 --self-contained true `
     -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true `
     -o "$artifactsDir/win-x64"
 
 Copy-Item "$artifactsDir/win-x64/BotChienTanSonNhi.Desktop.exe" "$publishDir/BotChienTanSonNhi-GMTPC.Desktop.exe" -Force
-Write-Host "  -> Đã tạo: $publishDir/BotChienTanSonNhi-GMTPC.Desktop.exe" -ForegroundColor Gray
+Write-Host "  -> Da tao: $publishDir/BotChienTanSonNhi-GMTPC.Desktop.exe" -ForegroundColor Gray
 
 # 2. BUILD LINUX (Standalone Binary, Portable Tar.gz, Debian Package .deb)
-Write-Host "`n[2/3] Đang xuất bản Linux x64 (Binary, Tar.gz, Deb)..." -ForegroundColor Green
+Write-Host "`n[2/3] Xuat ban Linux x64 (Binary, Tar.gz, Deb)..." -ForegroundColor Green
 dotnet publish "$PSScriptRoot/BotChienTanSonNhi/BotChienTanSonNhi.Desktop/BotChienTanSonNhi.Desktop.csproj" `
     -c Release -r linux-x64 --self-contained true `
     -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true `
@@ -34,11 +33,13 @@ dotnet publish "$PSScriptRoot/BotChienTanSonNhi/BotChienTanSonNhi.Desktop/BotChi
 
 # 2a. Standalone binary
 Copy-Item "$artifactsDir/linux-x64/BotChienTanSonNhi.Desktop" "$publishDir/BotChienTanSonNhi-GMTPC" -Force
-Write-Host "  -> Đã tạo: $publishDir/BotChienTanSonNhi-GMTPC" -ForegroundColor Gray
+Write-Host "  -> Da tao: $publishDir/BotChienTanSonNhi-GMTPC" -ForegroundColor Gray
 
 # 2b. Portable tar.gz
-tar -czf "$publishDir/BotChienTanSonNhi-GMTPC-linux-x64.tar.gz" -C "$publishDir" "BotChienTanSonNhi-GMTPC"
-Write-Host "  -> Đã tạo: $publishDir/BotChienTanSonNhi-GMTPC-linux-x64.tar.gz" -ForegroundColor Gray
+Push-Location $publishDir
+tar -czf "BotChienTanSonNhi-GMTPC-linux-x64.tar.gz" "BotChienTanSonNhi-GMTPC"
+Pop-Location
+Write-Host "  -> Da tao: $publishDir/BotChienTanSonNhi-GMTPC-linux-x64.tar.gz" -ForegroundColor Gray
 
 # 2c. Debian package (.deb)
 $debDir = "$artifactsDir/deb_build"
@@ -73,8 +74,10 @@ Categories=Utility;Office;
 [System.IO.File]::WriteAllText("$debDir/usr/share/applications/BotChienTanSonNhi-GMTPC.desktop", ($desktop.Replace("`r`n", "`n") + "`n"), (New-Object System.Text.UTF8Encoding($false)))
 [System.IO.File]::WriteAllText("$debDir/debian-binary", "2.0`n", (New-Object System.Text.UTF8Encoding($false)))
 
-tar -czf "$debDir/control.tar.gz" -C "$debDir/DEBIAN" control
-tar -czf "$debDir/data.tar.gz" -C "$debDir" usr
+Push-Location $debDir
+tar -czf control.tar.gz -C DEBIAN control
+tar -czf data.tar.gz usr
+Pop-Location
 
 function New-ArArchiveInternal {
     param([string]$OutputFile, [string[]]$InputFiles)
@@ -107,10 +110,10 @@ function New-ArArchiveInternal {
 }
 
 New-ArArchiveInternal -OutputFile "$publishDir/BotChienTanSonNhi-GMTPC_1.0.0_amd64.deb" -InputFiles @("$debDir/debian-binary", "$debDir/control.tar.gz", "$debDir/data.tar.gz")
-Write-Host "  -> Đã tạo: $publishDir/BotChienTanSonNhi-GMTPC_1.0.0_amd64.deb" -ForegroundColor Gray
+Write-Host "  -> Da tao: $publishDir/BotChienTanSonNhi-GMTPC_1.0.0_amd64.deb" -ForegroundColor Gray
 
 # 3. BUILD ANDROID (Signed Standalone APK)
-Write-Host "`n[3/3] Đang xuất bản Android Signed Standalone APK..." -ForegroundColor Green
+Write-Host "`n[3/3] Xuat ban Android Signed Standalone APK..." -ForegroundColor Green
 dotnet publish "$PSScriptRoot/BotChienTanSonNhi/BotChienTanSonNhi.Android/BotChienTanSonNhi.Android.csproj" `
     -c Release -f net10.0-android -p:AndroidPackageFormat=apk `
     -o "$artifactsDir/android"
@@ -118,10 +121,10 @@ dotnet publish "$PSScriptRoot/BotChienTanSonNhi/BotChienTanSonNhi.Android/BotChi
 $signedApk = Get-ChildItem "$artifactsDir/android" -Filter "*Signed.apk" | Select-Object -First 1
 if ($signedApk) {
     Copy-Item $signedApk.FullName "$publishDir/com.CompanyName.BotChienTanSonNhi-GMTPC-Signed.apk" -Force
-    Write-Host "  -> Đã tạo: $publishDir/com.CompanyName.BotChienTanSonNhi-GMTPC-Signed.apk" -ForegroundColor Gray
+    Write-Host "  -> Da tao: $publishDir/com.CompanyName.BotChienTanSonNhi-GMTPC-Signed.apk" -ForegroundColor Gray
 }
 
 Write-Host "`n==========================================================" -ForegroundColor Green
-Write-Host " HOÀN TẤT XUẤT XƯỞNG TOÀN BỘ GÓI PUBLISH (0 ERROR)" -ForegroundColor Green
+Write-Host " HOAN TAT XUAT XUONG TOAN BO GOI PUBLISH (0 ERROR)" -ForegroundColor Green
 Write-Host "==========================================================" -ForegroundColor Green
 Get-ChildItem $publishDir | Select-Object Name, Length, LastWriteTime | Format-Table -AutoSize

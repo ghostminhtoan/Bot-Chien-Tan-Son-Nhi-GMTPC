@@ -4,6 +4,8 @@
 [Oo]bj/
 artifacts/
 publish/
+github_token.txt
+.edge_profile/
 *.user
 *.suo
 .vs/

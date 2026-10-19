@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -75,6 +76,44 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ChangeDue))]
     private decimal _customerPaid = 0;
+
+    [ObservableProperty]
+    private string _customerPaidText = "0";
+
+    partial void OnCustomerPaidChanged(decimal value)
+    {
+        string formatted = value > 0 ? value.ToString("N0") : "0";
+        if (_customerPaidText != formatted)
+        {
+            _customerPaidText = formatted;
+            OnPropertyChanged(nameof(CustomerPaidText));
+        }
+    }
+
+    partial void OnCustomerPaidTextChanged(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            if (_customerPaid != 0)
+            {
+                _customerPaid = 0;
+                OnPropertyChanged(nameof(CustomerPaid));
+                OnPropertyChanged(nameof(ChangeDue));
+            }
+            return;
+        }
+
+        string rawDigits = new string(value.Where(char.IsDigit).ToArray());
+        if (decimal.TryParse(rawDigits, out decimal parsedVal))
+        {
+            if (_customerPaid != parsedVal)
+            {
+                _customerPaid = parsedVal;
+                OnPropertyChanged(nameof(CustomerPaid));
+                OnPropertyChanged(nameof(ChangeDue));
+            }
+        }
+    }
 
     [ObservableProperty]
     private string _orderType = "Tại chỗ"; // "Tại chỗ" hoặc "Mang về"
@@ -394,9 +433,9 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void AddQuickCash(decimal amount)
+    private void AddQuickCashDelta(decimal delta)
     {
-        CustomerPaid += amount;
+        CustomerPaid += delta;
         OnPropertyChanged(nameof(ChangeDue));
     }
 
@@ -410,7 +449,37 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private void AppendCashDigit(string digit)
     {
-        if (long.TryParse(CustomerPaid.ToString("F0") + digit, out long val))
+        string currentDigits = new string(CustomerPaidText.Where(char.IsDigit).ToArray());
+        if (currentDigits == "0" || string.IsNullOrEmpty(currentDigits))
+        {
+            currentDigits = digit == "000" ? "0" : digit;
+        }
+        else
+        {
+            currentDigits += digit;
+        }
+
+        if (decimal.TryParse(currentDigits, out decimal val))
+        {
+            CustomerPaid = val;
+            OnPropertyChanged(nameof(ChangeDue));
+        }
+    }
+
+    [RelayCommand]
+    private void BackspaceCash()
+    {
+        string currentDigits = new string(CustomerPaidText.Where(char.IsDigit).ToArray());
+        if (currentDigits.Length > 1)
+        {
+            currentDigits = currentDigits.Substring(0, currentDigits.Length - 1);
+        }
+        else
+        {
+            currentDigits = "0";
+        }
+
+        if (decimal.TryParse(currentDigits, out decimal val))
         {
             CustomerPaid = val;
             OnPropertyChanged(nameof(ChangeDue));
@@ -489,5 +558,56 @@ public partial class MainViewModel : ViewModelBase
     private void SwitchTab(int tabIndex)
     {
         SelectedTabIndex = tabIndex;
+    }
+
+    // --- Cập nhật Beta ---
+    [RelayCommand]
+    private void OpenUpdateBeta(string? platform = null)
+    {
+        string url = "";
+        if (string.Equals(platform, "windows", StringComparison.OrdinalIgnoreCase))
+        {
+            url = "https://github.com/ghostminhtoan/Bot-Chien-Tan-Son-Nhi-GMTPC/releases/download/beta/BotChienTanSonNhi-GMTPC.Desktop.exe";
+        }
+        else if (string.Equals(platform, "linux", StringComparison.OrdinalIgnoreCase))
+        {
+            url = "https://github.com/ghostminhtoan/Bot-Chien-Tan-Son-Nhi-GMTPC/releases/download/beta/BotChienTanSonNhi-GMTPC-linux-x64.tar.gz";
+        }
+        else if (string.Equals(platform, "android", StringComparison.OrdinalIgnoreCase))
+        {
+            url = "https://github.com/ghostminhtoan/Bot-Chien-Tan-Son-Nhi-GMTPC/releases/download/beta/com.CompanyName.BotChienTanSonNhi-GMTPC-Signed.apk";
+        }
+        else if (string.Equals(platform, "release", StringComparison.OrdinalIgnoreCase))
+        {
+            url = "https://github.com/ghostminhtoan/Bot-Chien-Tan-Son-Nhi-GMTPC/releases/tag/beta";
+        }
+        else
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                url = "https://github.com/ghostminhtoan/Bot-Chien-Tan-Son-Nhi-GMTPC/releases/download/beta/BotChienTanSonNhi-GMTPC.Desktop.exe";
+            }
+            else if (OperatingSystem.IsLinux())
+            {
+                url = "https://github.com/ghostminhtoan/Bot-Chien-Tan-Son-Nhi-GMTPC/releases/download/beta/BotChienTanSonNhi-GMTPC-linux-x64.tar.gz";
+            }
+            else if (OperatingSystem.IsAndroid())
+            {
+                url = "https://github.com/ghostminhtoan/Bot-Chien-Tan-Son-Nhi-GMTPC/releases/download/beta/com.CompanyName.BotChienTanSonNhi-GMTPC-Signed.apk";
+            }
+            else
+            {
+                url = "https://github.com/ghostminhtoan/Bot-Chien-Tan-Son-Nhi-GMTPC/releases/tag/beta";
+            }
+        }
+
+        try
+        {
+            Process.Start(new ProcessStartInfo { FileName = url, UseShellExecute = true });
+        }
+        catch
+        {
+            // ignored
+        }
     }
 }
