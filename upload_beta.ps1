@@ -154,7 +154,7 @@ try {
     $createBody = @{
         tag_name = $tag
         name = "Release $tag"
-        body = "Bản phát hành thử nghiệm tự động (Automated Beta Release) cho Bột Chiên & Nui Chiên Tân Sơn Nhì POS GMTPC.`n`nBao gồm các gói cài đặt standalone: Windows (.exe), Linux (.tar.gz) và Android (.apk)."
+        body = "Ban phat hanh thu nghiem tu dong (Automated Beta Release) cho Bot Chien & Nui Chien Tan Son Nhi POS GMTPC.`n`nBao gom cac goi cai dat standalone: Windows (.exe), Linux (.tar.gz) va Android (.apk)."
         draft = $false
         prerelease = $true
     } | ConvertTo-Json
