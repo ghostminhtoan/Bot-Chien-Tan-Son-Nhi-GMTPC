@@ -72,9 +72,13 @@ public class IntToVisibilityConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is int count && parameter is string targetStr && int.TryParse(targetStr, out int target))
+        if (value != null && parameter != null)
         {
-            return count == target;
+            if (int.TryParse(value.ToString(), out int valInt) && int.TryParse(parameter.ToString(), out int paramInt))
+            {
+                return valInt == paramInt;
+            }
+            return string.Equals(value.ToString(), parameter.ToString(), StringComparison.OrdinalIgnoreCase);
         }
         return false;
     }

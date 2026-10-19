@@ -115,7 +115,7 @@ Write-Host "  -> Da tao: $publishDir/BotChienTanSonNhi-GMTPC_1.0.0_amd64.deb" -F
 # 3. BUILD ANDROID (Signed Standalone APK)
 Write-Host "`n[3/3] Xuat ban Android Signed Standalone APK..." -ForegroundColor Green
 dotnet publish "$PSScriptRoot/BotChienTanSonNhi/BotChienTanSonNhi.Android/BotChienTanSonNhi.Android.csproj" `
-    -c Release -f net10.0-android -p:AndroidPackageFormat=apk `
+    -c Release -f net10.0-android -p:AndroidPackageFormat=apk -p:PublishTrimmed=false -p:RunAOTCompilation=false `
     -o "$artifactsDir/android"
 
 $signedApk = Get-ChildItem "$artifactsDir/android" -Filter "*Signed.apk" | Select-Object -First 1

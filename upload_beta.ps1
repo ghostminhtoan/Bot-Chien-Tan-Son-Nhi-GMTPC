@@ -5,7 +5,7 @@
 # ==============================================================================
 
 param(
-    [double]$MinSpeedMbps = 20.0,
+    [double]$MinSpeedMbps = 1.0,
     [int]$WarmupSeconds = 4,
     [int]$MaxAttempts = 30
 )

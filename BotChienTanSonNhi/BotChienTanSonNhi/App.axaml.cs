@@ -8,6 +8,9 @@ namespace BotChienTanSonNhi;
 
 public partial class App : Application
 {
+    private static MainViewModel? _sharedMainViewModel;
+    public static MainViewModel SharedMainViewModel => _sharedMainViewModel ??= new MainViewModel();
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -22,18 +25,21 @@ public partial class App : Application
         {
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainViewModel()
+                DataContext = SharedMainViewModel
             };
         }
-        else if (ApplicationLifetime is IActivityApplicationLifetime singleViewFactoryApplicationLifetime)
-        {
-            singleViewFactoryApplicationLifetime.MainViewFactory = () => new MainView { DataContext = new MainViewModel() };
-        }
-        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
+        if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
             singleViewPlatform.MainView = new MainView
             {
-                DataContext = new MainViewModel()
+                DataContext = SharedMainViewModel
+            };
+        }
+        if (ApplicationLifetime is IActivityApplicationLifetime singleViewFactoryApplicationLifetime)
+        {
+            singleViewFactoryApplicationLifetime.MainViewFactory = () => new MainView
+            {
+                DataContext = SharedMainViewModel
             };
         }
 

@@ -42,7 +42,7 @@ if %ERRORLEVEL% EQU 0 (
 )
 
 :USE_POWERSHELL
-set MIN_SPEED_MBPS=20
+set MIN_SPEED_MBPS=1
 echo [INFO] Chay che do PowerShell API (Toc do yeu cau: %MIN_SPEED_MBPS% Mbps)...
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0upload_beta.ps1" -MinSpeedMbps %MIN_SPEED_MBPS%
 

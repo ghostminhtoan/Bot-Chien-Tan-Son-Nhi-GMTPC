@@ -433,17 +433,43 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void AddQuickCashDelta(decimal delta)
+    private void AddQuickCashDelta(object? param)
     {
-        CustomerPaid += delta;
-        OnPropertyChanged(nameof(ChangeDue));
+        decimal delta = 0;
+        if (param is decimal d)
+        {
+            delta = d;
+        }
+        else if (param != null && decimal.TryParse(param.ToString(), out decimal parsed))
+        {
+            delta = parsed;
+        }
+
+        if (delta > 0)
+        {
+            CustomerPaid += delta;
+            OnPropertyChanged(nameof(ChangeDue));
+        }
     }
 
     [RelayCommand]
-    private void SetQuickCash(decimal amount)
+    private void SetQuickCash(object? param)
     {
-        CustomerPaid = amount;
-        OnPropertyChanged(nameof(ChangeDue));
+        decimal amount = 0;
+        if (param is decimal d)
+        {
+            amount = d;
+        }
+        else if (param != null && decimal.TryParse(param.ToString(), out decimal parsed))
+        {
+            amount = parsed;
+        }
+
+        if (amount >= 0)
+        {
+            CustomerPaid = amount;
+            OnPropertyChanged(nameof(ChangeDue));
+        }
     }
 
     [RelayCommand]
@@ -555,9 +581,16 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void SwitchTab(int tabIndex)
+    private void SwitchTab(object? param)
     {
-        SelectedTabIndex = tabIndex;
+        if (param is int i)
+        {
+            SelectedTabIndex = i;
+        }
+        else if (param != null && int.TryParse(param.ToString(), out int parsed))
+        {
+            SelectedTabIndex = parsed;
+        }
     }
 
     // --- Cập nhật Beta ---
