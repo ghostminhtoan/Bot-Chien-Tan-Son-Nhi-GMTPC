@@ -1,0 +1,37 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:BotChienTanSonNhi"
+             xmlns:conv="using:BotChienTanSonNhi.Converters"
+             x:Class="BotChienTanSonNhi.App"
+             RequestedThemeVariant="Dark">
+
+    <Application.DataTemplates>
+        <local:ViewLocator />
+    </Application.DataTemplates>
+
+    <Application.Resources>
+        <conv:EqualityToBrushConverter x:Key="EqBrushConv" />
+        <conv:EqualityToTextBrushConverter x:Key="EqTextBrushConv" />
+        <conv:CurrencyFormatConverter x:Key="CurrencyConv" />
+        <conv:IntToVisibilityConverter x:Key="IntVisConv" />
+
+        <!-- Gourmet Amber Noir Palette -->
+        <SolidColorBrush x:Key="BgDarkBrush" Color="#121418" />
+        <SolidColorBrush x:Key="CardBgBrush" Color="#1C1F26" />
+        <SolidColorBrush x:Key="CardBorderBrush" Color="#2E3440" />
+        <SolidColorBrush x:Key="AmberGoldBrush" Color="#F59E0B" />
+        <SolidColorBrush x:Key="AmberGoldHoverBrush" Color="#D97706" />
+        <SolidColorBrush x:Key="ScallionGreenBrush" Color="#10B981" />
+        <SolidColorBrush x:Key="SrirachaRedBrush" Color="#EF4444" />
+        <SolidColorBrush x:Key="TextPrimaryBrush" Color="#F3F4F6" />
+        <SolidColorBrush x:Key="TextSecondaryBrush" Color="#9CA3AF" />
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+        <Style Selector="Button">
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </Application.Styles>
+</Application>

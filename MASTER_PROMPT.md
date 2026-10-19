@@ -249,3 +249,4 @@ Hệ thống tích hợp sẵn mô-đun in nhiệt (Thermal 58mm / 80mm):
 2. **Toán học chính xác**: Xử lý hoàn hảo mọi trường hợp cộng dồn bánh thêm (+3k, +5k nhiều lần) và bớt bánh (-2k).
 3. **Hiệu năng siêu tốc**: Thời gian khởi động app < 1.5 giây, tốc độ phản hồi cảm ứng khi chọn món < 16ms, giao diện đạt 60fps mượt mà.
 4. **Vận hành Offline**: Cơ chế lưu trữ SQLite cục bộ đảm bảo không mất dữ liệu ca bán khi gặp sự cố mất điện đột ngột.
+

@@ -1,0 +1,10 @@
+[Dd]ebug/
+[Rr]elease/
+[Bb]in/
+[Oo]bj/
+artifacts/
+publish/
+*.user
+*.suo
+.vs/
+.idea/

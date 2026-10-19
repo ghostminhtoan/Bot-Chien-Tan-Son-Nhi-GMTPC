@@ -1,0 +1,584 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:BotChienTanSonNhi.ViewModels"
+             xmlns:models="using:BotChienTanSonNhi.Models"
+             mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="800"
+             x:Class="BotChienTanSonNhi.Views.MainView"
+             x:DataType="vm:MainViewModel"
+             Background="{StaticResource BgDarkBrush}">
+
+    <Grid RowDefinitions="64, *">
+        <!-- TOP NAVIGATION BAR -->
+        <Border Grid.Row="0" Background="#181B22" BorderBrush="#262A34" BorderThickness="0,0,0,1" Padding="16,8">
+            <Grid ColumnDefinitions="Auto, *, Auto">
+                <!-- Brand Title -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="12">
+                    <Border Background="#F59E0B" CornerRadius="8" Width="40" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Text="🍳" FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="BỘT CHIÊN TÂN SƠN NHÌ" FontWeight="Bold" FontSize="18" Foreground="#F59E0B" LetterSpacing="0.5" />
+                        <TextBlock Text="Đặc Sản Bột Chiên &amp; Nui Chiên Truyền Thống - POS" FontSize="11" Foreground="#9CA3AF" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Navigation Tabs -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8">
+                    <Button Command="{Binding SwitchTabCommand}" CommandParameter="0"
+                            Background="{Binding SelectedTabIndex, Converter={StaticResource EqBrushConv}, ConverterParameter=0}"
+                            Foreground="{Binding SelectedTabIndex, Converter={StaticResource EqTextBrushConv}, ConverterParameter=0}"
+                            Padding="20,10" FontWeight="Bold" FontSize="14" CornerRadius="8">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="🛒" />
+                            <TextBlock Text="BÁN HÀNG" />
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding SwitchTabCommand}" CommandParameter="1"
+                            Background="{Binding SelectedTabIndex, Converter={StaticResource EqBrushConv}, ConverterParameter=1}"
+                            Foreground="{Binding SelectedTabIndex, Converter={StaticResource EqTextBrushConv}, ConverterParameter=1}"
+                            Padding="20,10" FontWeight="Bold" FontSize="14" CornerRadius="8">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="📜" />
+                            <TextBlock Text="LỊCH SỬ ĐƠN" />
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding SwitchTabCommand}" CommandParameter="2"
+                            Background="{Binding SelectedTabIndex, Converter={StaticResource EqBrushConv}, ConverterParameter=2}"
+                            Foreground="{Binding SelectedTabIndex, Converter={StaticResource EqTextBrushConv}, ConverterParameter=2}"
+                            Padding="20,10" FontWeight="Bold" FontSize="14" CornerRadius="8">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="📊" />
+                            <TextBlock Text="THỐNG KÊ CA" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <!-- Shift Status & Order Type -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="12">
+                    <Button Command="{Binding ToggleOrderTypeCommand}"
+                            Background="#262A34" Foreground="#10B981" BorderBrush="#10B981" BorderThickness="1"
+                            Padding="14,8" FontWeight="Bold" FontSize="13" CornerRadius="8">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <TextBlock Text="🏷️" />
+                            <TextBlock Text="{Binding OrderType}" />
+                        </StackPanel>
+                    </Button>
+
+                    <Border Background="#20242D" CornerRadius="8" Padding="12,6" BorderBrush="#2E3440" BorderThickness="1">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="Doanh thu ca:" FontSize="12" Foreground="#9CA3AF" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding TotalShiftRevenue, Converter={StaticResource CurrencyConv}}"
+                                       FontSize="14" FontWeight="Bold" Foreground="#F59E0B" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- MAIN CONTENT AREA -->
+        <Grid Grid.Row="1">
+            <!-- TAB 0: BÁN HÀNG POS -->
+            <Grid IsVisible="{Binding SelectedTabIndex, Converter={StaticResource IntVisConv}, ConverterParameter=0}"
+                  ColumnDefinitions="62*, 38*">
+
+                <!-- LEFT PANE: MENU & CUSTOMIZATION (SCROLLABLE) -->
+                <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Padding="16">
+                    <StackPanel Spacing="16">
+
+                        <!-- 1. CHỌN MÓN CHÍNH -->
+                        <Border Background="#1C1F26" CornerRadius="12" Padding="16" BorderBrush="#2A2F3A" BorderThickness="1">
+                            <StackPanel Spacing="10">
+                                <TextBlock Text="1. CHỌN MÓN CHÍNH" FontWeight="Bold" FontSize="14" Foreground="#F59E0B" />
+                                <Grid ColumnDefinitions="*, *, *">
+                                    <Button Grid.Column="0" Margin="0,0,4,0" Height="60"
+                                            Command="{Binding SelectProductCommand}" CommandParameter="{x:Static models:ProductKind.BotChien}"
+                                            Background="{Binding CurrentProduct, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:ProductKind.BotChien}}"
+                                            Foreground="{Binding CurrentProduct, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:ProductKind.BotChien}}">
+                                        <StackPanel HorizontalAlignment="Center">
+                                            <TextBlock Text="BỘT CHIÊN" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" />
+                                            <TextBlock Text="Bột gạo giòn dẻo" FontSize="11" Opacity="0.8" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Grid.Column="1" Margin="4,0,4,0" Height="60"
+                                            Command="{Binding SelectProductCommand}" CommandParameter="{x:Static models:ProductKind.NuiChien}"
+                                            Background="{Binding CurrentProduct, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:ProductKind.NuiChien}}"
+                                            Foreground="{Binding CurrentProduct, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:ProductKind.NuiChien}}">
+                                        <StackPanel HorizontalAlignment="Center">
+                                            <TextBlock Text="NUI CHIÊN" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" />
+                                            <TextBlock Text="Nui vàng giòn béo" FontSize="11" Opacity="0.8" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Grid.Column="2" Margin="4,0,0,0" Height="60"
+                                            Command="{Binding SelectProductCommand}" CommandParameter="{x:Static models:ProductKind.ThapCam}"
+                                            Background="{Binding CurrentProduct, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:ProductKind.ThapCam}}"
+                                            Foreground="{Binding CurrentProduct, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:ProductKind.ThapCam}}">
+                                        <StackPanel HorizontalAlignment="Center">
+                                            <TextBlock Text="THẬP CẨM" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" />
+                                            <TextBlock Text="Bột + Nui hòa quyện" FontSize="11" Opacity="0.8" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 2. MA TRẬN ĐỊNH LƯỢNG TRỨNG -->
+                        <Border Background="#1C1F26" CornerRadius="12" Padding="16" BorderBrush="#2A2F3A" BorderThickness="1">
+                            <StackPanel Spacing="10">
+                                <TextBlock Text="2. ĐỊNH LƯỢNG TRỨNG (ĐỒNG GIÁ BỘT &amp; NUI)" FontWeight="Bold" FontSize="14" Foreground="#F59E0B" />
+                                <Grid ColumnDefinitions="*, *, *, *">
+                                    <Button Grid.Column="0" Margin="0,0,4,0" Height="70"
+                                            Command="{Binding SelectEggCommand}" CommandParameter="{x:Static models:EggOption.MotTrung}"
+                                            Background="{Binding CurrentEgg, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:EggOption.MotTrung}}"
+                                            Foreground="{Binding CurrentEgg, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:EggOption.MotTrung}}">
+                                        <StackPanel HorizontalAlignment="Center">
+                                            <TextBlock Text="1 TRỨNG" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" />
+                                            <TextBlock Text="22.000 đ" FontSize="13" FontWeight="Bold" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Grid.Column="1" Margin="4,0,4,0" Height="70"
+                                            Command="{Binding SelectEggCommand}" CommandParameter="{x:Static models:EggOption.HaiTrung}"
+                                            Background="{Binding CurrentEgg, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:EggOption.HaiTrung}}"
+                                            Foreground="{Binding CurrentEgg, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:EggOption.HaiTrung}}">
+                                        <StackPanel HorizontalAlignment="Center">
+                                            <TextBlock Text="2 TRỨNG" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" />
+                                            <TextBlock Text="25.000 đ" FontSize="13" FontWeight="Bold" HorizontalAlignment="Center" />
+                                            <TextBlock Text="⭐ Phổ biến" FontSize="10" Foreground="#10B981" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Grid.Column="2" Margin="4,0,4,0" Height="70"
+                                            Command="{Binding SelectEggCommand}" CommandParameter="{x:Static models:EggOption.HaiTrungNhieuBanh}"
+                                            Background="{Binding CurrentEgg, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:EggOption.HaiTrungNhieuBanh}}"
+                                            Foreground="{Binding CurrentEgg, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:EggOption.HaiTrungNhieuBanh}}">
+                                        <StackPanel HorizontalAlignment="Center">
+                                            <TextBlock Text="2 TRỨNG NHIỀU BÁNH" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" />
+                                            <TextBlock Text="30.000 đ" FontSize="13" FontWeight="Bold" HorizontalAlignment="Center" />
+                                            <TextBlock Text="Nhiều bánh" FontSize="10" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Grid.Column="3" Margin="4,0,0,0" Height="70"
+                                            Command="{Binding SelectEggCommand}" CommandParameter="{x:Static models:EggOption.BaTrung}"
+                                            Background="{Binding CurrentEgg, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:EggOption.BaTrung}}"
+                                            Foreground="{Binding CurrentEgg, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:EggOption.BaTrung}}">
+                                        <StackPanel HorizontalAlignment="Center">
+                                            <TextBlock Text="3 TRỨNG" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" />
+                                            <TextBlock Text="30.000 đ" FontSize="13" FontWeight="Bold" HorizontalAlignment="Center" />
+                                            <TextBlock Text="Đậm vị trứng" FontSize="10" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 3. TÙY BIẾN BÁNH: ÍT BÁNH (-2K) & THÊM BÁNH CỘNG DỒN (+3K, +5K) -->
+                        <Border Background="#1C1F26" CornerRadius="12" Padding="16" BorderBrush="#2A2F3A" BorderThickness="1">
+                            <StackPanel Spacing="10">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <TextBlock Grid.Column="0" Text="3. TÙY CHỌN LƯỢNG BÁNH (CỘNG DỒN LIÊN TIẾP)" FontWeight="Bold" FontSize="14" Foreground="#F59E0B" />
+                                    <Button Grid.Column="1" Command="{Binding ResetModifiersCommand}" Background="#2E3440" Foreground="#9CA3AF" Padding="8,4" FontSize="11">
+                                        Làm mới bánh
+                                    </Button>
+                                </Grid>
+
+                                <Grid ColumnDefinitions="*, *, *">
+                                    <!-- ÍT BÁNH (-2k) -->
+                                    <ToggleButton Grid.Column="0" Margin="0,0,4,0" Height="64"
+                                                  IsChecked="{Binding IsLessCake}" Command="{Binding ToggleLessCakeCommand}"
+                                                  CornerRadius="10">
+                                        <StackPanel HorizontalAlignment="Center">
+                                            <TextBlock Text="ÍT BÁNH" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center" />
+                                            <TextBlock Text="-2.000 đ" FontWeight="Bold" FontSize="13" Foreground="#EF4444" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </ToggleButton>
+
+                                    <!-- THÊM BÁNH (+3k) -->
+                                    <Border Grid.Column="1" Margin="4,0,4,0" Background="#222631" CornerRadius="10" BorderBrush="#2E3440" BorderThickness="1" Padding="6">
+                                        <Grid ColumnDefinitions="36, *, 36" VerticalAlignment="Center">
+                                            <Button Grid.Column="0" Command="{Binding MinusExtra3kCommand}" Width="36" Height="48" Background="#2E3440" Foreground="#E5E7EB" FontWeight="Bold" FontSize="18">-</Button>
+                                            <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <TextBlock Text="THÊM BÁNH +3k" FontSize="11" FontWeight="Bold" HorizontalAlignment="Center" />
+                                                <TextBlock Text="{Binding Extra3kCount, StringFormat='x{0} (+{0}x3k)'}" FontSize="12" FontWeight="Bold" Foreground="#F59E0B" HorizontalAlignment="Center" />
+                                            </StackPanel>
+                                            <Button Grid.Column="2" Command="{Binding AddExtra3kCommand}" Width="36" Height="48" Background="#F59E0B" Foreground="#000000" FontWeight="Bold" FontSize="18">+</Button>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- THÊM BÁNH (+5k) -->
+                                    <Border Grid.Column="2" Margin="4,0,0,0" Background="#222631" CornerRadius="10" BorderBrush="#2E3440" BorderThickness="1" Padding="6">
+                                        <Grid ColumnDefinitions="36, *, 36" VerticalAlignment="Center">
+                                            <Button Grid.Column="0" Command="{Binding MinusExtra5kCommand}" Width="36" Height="48" Background="#2E3440" Foreground="#E5E7EB" FontWeight="Bold" FontSize="18">-</Button>
+                                            <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <TextBlock Text="THÊM BÁNH +5k" FontSize="11" FontWeight="Bold" HorizontalAlignment="Center" />
+                                                <TextBlock Text="{Binding Extra5kCount, StringFormat='x{0} (+{0}x5k)'}" FontSize="12" FontWeight="Bold" Foreground="#F59E0B" HorizontalAlignment="Center" />
+                                            </StackPanel>
+                                            <Button Grid.Column="2" Command="{Binding AddExtra5kCommand}" Width="36" Height="48" Background="#F59E0B" Foreground="#000000" FontWeight="Bold" FontSize="18">+</Button>
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 4. HỆ THỐNG GHI CHÚ BẾP 6 NHÓM (SEGMENTED TOUCH CHIPS) -->
+                        <Border Background="#1C1F26" CornerRadius="12" Padding="16" BorderBrush="#2A2F3A" BorderThickness="1">
+                            <StackPanel Spacing="12">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <TextBlock Grid.Column="0" Text="4. GHI CHÚ CHẾ BIẾN BẾP (CHẠM 1 CHẠM)" FontWeight="Bold" FontSize="14" Foreground="#F59E0B" />
+                                    <Button Grid.Column="1" Command="{Binding ResetKitchenNotesCommand}" Background="#2E3440" Foreground="#9CA3AF" Padding="8,4" FontSize="11">
+                                        Chuẩn vị
+                                    </Button>
+                                </Grid>
+
+                                <!-- Nhóm 1: Độ giòn Bột / Nui -->
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Độ giòn Bột / Nui:" FontSize="12" Foreground="#9CA3AF" />
+                                    <WrapPanel Orientation="Horizontal">
+                                        <Button Margin="0,0,6,6" Command="{Binding SetTextureCommand}" CommandParameter="{x:Static models:CakeTexture.Vua}"
+                                                Background="{Binding CurrentTexture, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:CakeTexture.Vua}}"
+                                                Foreground="{Binding CurrentTexture, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:CakeTexture.Vua}}">Vừa (Chuẩn)</Button>
+                                        <Button Margin="0,0,6,6" Command="{Binding SetTextureCommand}" CommandParameter="{x:Static models:CakeTexture.Gion}"
+                                                Background="{Binding CurrentTexture, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:CakeTexture.Gion}}"
+                                                Foreground="{Binding CurrentTexture, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:CakeTexture.Gion}}">🔥 Giòn rụm</Button>
+                                        <Button Margin="0,0,6,6" Command="{Binding SetTextureCommand}" CommandParameter="{x:Static models:CakeTexture.GionVua}"
+                                                Background="{Binding CurrentTexture, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:CakeTexture.GionVua}}"
+                                                Foreground="{Binding CurrentTexture, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:CakeTexture.GionVua}}">Giòn vừa</Button>
+                                        <Button Margin="0,0,6,6" Command="{Binding SetTextureCommand}" CommandParameter="{x:Static models:CakeTexture.MemVang}"
+                                                Background="{Binding CurrentTexture, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:CakeTexture.MemVang}}"
+                                                Foreground="{Binding CurrentTexture, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:CakeTexture.MemVang}}">Mềm vàng</Button>
+                                        <Button Margin="0,0,6,6" Command="{Binding SetTextureCommand}" CommandParameter="{x:Static models:CakeTexture.MemTrang}"
+                                                Background="{Binding CurrentTexture, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:CakeTexture.MemTrang}}"
+                                                Foreground="{Binding CurrentTexture, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:CakeTexture.MemTrang}}">Mềm trắng</Button>
+                                    </WrapPanel>
+                                </StackPanel>
+
+                                <!-- Nhóm 2: Hành -->
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Hành hoa:" FontSize="12" Foreground="#9CA3AF" />
+                                    <WrapPanel Orientation="Horizontal">
+                                        <Button Margin="0,0,6,6" Command="{Binding SetScallionCommand}" CommandParameter="{x:Static models:ScallionOption.MacDinh}"
+                                                Background="{Binding CurrentScallion, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:ScallionOption.MacDinh}}"
+                                                Foreground="{Binding CurrentScallion, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:ScallionOption.MacDinh}}">Mặc định</Button>
+                                        <Button Margin="0,0,6,6" Command="{Binding SetScallionCommand}" CommandParameter="{x:Static models:ScallionOption.NhieuHanh}"
+                                                Background="{Binding CurrentScallion, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:ScallionOption.NhieuHanh}}"
+                                                Foreground="{Binding CurrentScallion, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:ScallionOption.NhieuHanh}}">++ Nhiều hành</Button>
+                                        <Button Margin="0,0,6,6" Command="{Binding SetScallionCommand}" CommandParameter="{x:Static models:ScallionOption.KhongHanh}"
+                                                Background="{Binding CurrentScallion, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:ScallionOption.KhongHanh}}"
+                                                Foreground="{Binding CurrentScallion, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:ScallionOption.KhongHanh}}">❌ Không hành</Button>
+                                        <Button Margin="0,0,6,6" Command="{Binding SetScallionCommand}" CommandParameter="{x:Static models:ScallionOption.HanhSong}"
+                                                Background="{Binding CurrentScallion, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:ScallionOption.HanhSong}}"
+                                                Foreground="{Binding CurrentScallion, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:ScallionOption.HanhSong}}">🌿 Hành sống</Button>
+                                    </WrapPanel>
+                                </StackPanel>
+
+                                <!-- Nhóm 3: Đồ chua -->
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Đồ chua Đu đủ:" FontSize="12" Foreground="#9CA3AF" />
+                                    <WrapPanel Orientation="Horizontal">
+                                        <Button Margin="0,0,6,6" Command="{Binding SetPickleCommand}" CommandParameter="{x:Static models:PickleOption.MacDinh}"
+                                                Background="{Binding CurrentPickle, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:PickleOption.MacDinh}}"
+                                                Foreground="{Binding CurrentPickle, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:PickleOption.MacDinh}}">Ăn chung đĩa</Button>
+                                        <Button Margin="0,0,6,6" Command="{Binding SetPickleCommand}" CommandParameter="{x:Static models:PickleOption.NhieuDuDu}"
+                                                Background="{Binding CurrentPickle, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:PickleOption.NhieuDuDu}}"
+                                                Foreground="{Binding CurrentPickle, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:PickleOption.NhieuDuDu}}">++ Nhiều đu đủ</Button>
+                                        <Button Margin="0,0,6,6" Command="{Binding SetPickleCommand}" CommandParameter="{x:Static models:PickleOption.DuDuRieng}"
+                                                Background="{Binding CurrentPickle, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:PickleOption.DuDuRieng}}"
+                                                Foreground="{Binding CurrentPickle, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:PickleOption.DuDuRieng}}">📦 Đu đủ riêng</Button>
+                                        <Button Margin="0,0,6,6" Command="{Binding SetPickleCommand}" CommandParameter="{x:Static models:PickleOption.KhongDuDu}"
+                                                Background="{Binding CurrentPickle, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:PickleOption.KhongDuDu}}"
+                                                Foreground="{Binding CurrentPickle, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:PickleOption.KhongDuDu}}">❌ Không đu đủ</Button>
+                                    </WrapPanel>
+                                </StackPanel>
+
+                                <!-- Nhóm 4: Trứng -->
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="Kiểu trứng:" FontSize="12" Foreground="#9CA3AF" />
+                                    <WrapPanel Orientation="Horizontal">
+                                        <Button Margin="0,0,6,6" Command="{Binding SetEggStyleCommand}" CommandParameter="{x:Static models:EggStyle.ChinKy}"
+                                                Background="{Binding CurrentEggStyle, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:EggStyle.ChinKy}}"
+                                                Foreground="{Binding CurrentEggStyle, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:EggStyle.ChinKy}}">Trứng chín kỹ</Button>
+                                        <Button Margin="0,0,6,6" Command="{Binding SetEggStyleCommand}" CommandParameter="{x:Static models:EggStyle.GionRum}"
+                                                Background="{Binding CurrentEggStyle, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:EggStyle.GionRum}}"
+                                                Foreground="{Binding CurrentEggStyle, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:EggStyle.GionRum}}">Trứng chiên giòn</Button>
+                                        <Button Margin="0,0,6,6" Command="{Binding SetEggStyleCommand}" CommandParameter="{x:Static models:EggStyle.LongDao}"
+                                                Background="{Binding CurrentEggStyle, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:EggStyle.LongDao}}"
+                                                Foreground="{Binding CurrentEggStyle, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:EggStyle.LongDao}}">🍳 Lòng đào béo</Button>
+                                    </WrapPanel>
+                                </StackPanel>
+
+                                <!-- Nhóm 5 & 6: Tương ớt & Ớt xay -->
+                                <Grid ColumnDefinitions="*, *">
+                                    <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,4,0">
+                                        <TextBlock Text="Tương ớt đóng chai:" FontSize="12" Foreground="#9CA3AF" />
+                                        <WrapPanel Orientation="Horizontal">
+                                            <Button Margin="0,0,4,6" Command="{Binding SetChiliSauceCommand}" CommandParameter="{x:Static models:ChiliSauceOption.MacDinh}"
+                                                    Background="{Binding CurrentChiliSauce, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:ChiliSauceOption.MacDinh}}"
+                                                    Foreground="{Binding CurrentChiliSauce, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:ChiliSauceOption.MacDinh}}">Tiêu chuẩn</Button>
+                                            <Button Margin="0,0,4,6" Command="{Binding SetChiliSauceCommand}" CommandParameter="{x:Static models:ChiliSauceOption.NhieuTuongOt}"
+                                                    Background="{Binding CurrentChiliSauce, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:ChiliSauceOption.NhieuTuongOt}}"
+                                                    Foreground="{Binding CurrentChiliSauce, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:ChiliSauceOption.NhieuTuongOt}}">++ Nhiều tương</Button>
+                                            <Button Margin="0,0,4,6" Command="{Binding SetChiliSauceCommand}" CommandParameter="{x:Static models:ChiliSauceOption.KhongTuongOt}"
+                                                    Background="{Binding CurrentChiliSauce, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:ChiliSauceOption.KhongTuongOt}}"
+                                                    Foreground="{Binding CurrentChiliSauce, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:ChiliSauceOption.KhongTuongOt}}">❌ Không</Button>
+                                        </WrapPanel>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" Spacing="4" Margin="4,0,0,0">
+                                        <TextBlock Text="Ớt cay xay tươi:" FontSize="12" Foreground="#9CA3AF" />
+                                        <WrapPanel Orientation="Horizontal">
+                                            <Button Margin="0,0,4,6" Command="{Binding SetFreshChiliCommand}" CommandParameter="{x:Static models:FreshChiliOption.BinhThuong}"
+                                                    Background="{Binding CurrentFreshChili, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:FreshChiliOption.BinhThuong}}"
+                                                    Foreground="{Binding CurrentFreshChili, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:FreshChiliOption.BinhThuong}}">Bình thường</Button>
+                                            <Button Margin="0,0,4,6" Command="{Binding SetFreshChiliCommand}" CommandParameter="{x:Static models:FreshChiliOption.NhieuOtXay}"
+                                                    Background="{Binding CurrentFreshChili, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:FreshChiliOption.NhieuOtXay}}"
+                                                    Foreground="{Binding CurrentFreshChili, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:FreshChiliOption.NhieuOtXay}}">🌶️🌶️ Nhiều</Button>
+                                            <Button Margin="0,0,4,6" Command="{Binding SetFreshChiliCommand}" CommandParameter="{x:Static models:FreshChiliOption.ItOtXay}"
+                                                    Background="{Binding CurrentFreshChili, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:FreshChiliOption.ItOtXay}}"
+                                                    Foreground="{Binding CurrentFreshChili, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:FreshChiliOption.ItOtXay}}">🌶️ Ít</Button>
+                                            <Button Margin="0,0,4,6" Command="{Binding SetFreshChiliCommand}" CommandParameter="{x:Static models:FreshChiliOption.KhongOtXay}"
+                                                    Background="{Binding CurrentFreshChili, Converter={StaticResource EqBrushConv}, ConverterParameter={x:Static models:FreshChiliOption.KhongOtXay}}"
+                                                    Foreground="{Binding CurrentFreshChili, Converter={StaticResource EqTextBrushConv}, ConverterParameter={x:Static models:FreshChiliOption.KhongOtXay}}">❌ Không</Button>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- BIG CTA BUTTON: THÊM VÀO ĐƠN -->
+                        <Button Command="{Binding AddToCartCommand}" Height="64"
+                                Background="#F59E0B" Foreground="#000000" CornerRadius="12">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
+                                    <TextBlock Text="➕ THÊM VÀO GIỎ HÀNG" FontWeight="Bold" FontSize="18" />
+                                    <TextBlock Text="{Binding CurrentKitchenSummary, StringFormat='({0})'}"
+                                               FontSize="12" Opacity="0.75" VerticalAlignment="Center" />
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Text="{Binding CurrentUnitPrice, Converter={StaticResource CurrencyConv}}"
+                                           FontWeight="Bold" FontSize="22" VerticalAlignment="Center" Margin="0,0,12,0" />
+                            </Grid>
+                        </Button>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- RIGHT PANE: ORDER TICKET & PAYMENT -->
+                <Border Grid.Column="1" Background="#181B22" BorderBrush="#262A34" BorderThickness="1,0,0,0" Padding="16">
+                    <Grid RowDefinitions="Auto, *, Auto, Auto">
+                        <!-- Ticket Header -->
+                        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,0,0,10">
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="HÓA ĐƠN ĐANG CHỌN" FontWeight="Bold" FontSize="16" Foreground="#F59E0B" />
+                                <TextBlock Text="{Binding CartItemCount, StringFormat='Tổng số: {0} phần ăn'}" FontSize="12" Foreground="#9CA3AF" />
+                            </StackPanel>
+                            <Button Grid.Column="1" Command="{Binding ClearCartCommand}" Background="#2E3440" Foreground="#EF4444" Padding="10,6" FontSize="12">
+                                🗑️ Xóa hết
+                            </Button>
+                        </Grid>
+
+                        <!-- Cart Items List -->
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,0,0,10">
+                            <ItemsControl ItemsSource="{Binding CartItems}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="models:PosOrderItem">
+                                        <Border Background="#20242D" CornerRadius="10" Padding="10" Margin="0,0,0,8" BorderBrush="#2E3440" BorderThickness="1">
+                                            <Grid ColumnDefinitions="*, Auto">
+                                                <StackPanel Grid.Column="0" Spacing="2">
+                                                    <TextBlock Text="{Binding ProductNameDisplay}" FontWeight="Bold" FontSize="14" Foreground="#F3F4F6" />
+                                                    <TextBlock Text="{Binding EggNameDisplay}" FontSize="12" Foreground="#F59E0B" />
+                                                    <TextBlock Text="{Binding ModifierDisplay}" FontSize="11" Foreground="#9CA3AF" />
+                                                    <TextBlock Text="{Binding KitchenSummaryDisplay}" FontSize="11" Foreground="#10B981" />
+                                                </StackPanel>
+
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                                                    <TextBlock Text="{Binding LineTotal, Converter={StaticResource CurrencyConv}}"
+                                                               FontWeight="Bold" FontSize="14" Foreground="#F59E0B" HorizontalAlignment="Right" />
+
+                                                    <!-- Quantity Controls -->
+                                                    <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Right">
+                                                        <Button Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).DecreaseQuantityCommand}"
+                                                                CommandParameter="{Binding}" Width="28" Height="28" Padding="0" Background="#2E3440">-</Button>
+                                                        <TextBlock Text="{Binding Quantity}" Width="24" TextAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" />
+                                                        <Button Command="{Binding $parent[UserControl].((vm:MainViewModel)DataContext).IncreaseQuantityCommand}"
+                                                                CommandParameter="{Binding}" Width="28" Height="28" Padding="0" Background="#F59E0B" Foreground="#000000">+</Button>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+
+                        <!-- Quick Cash Numpad & Calculations -->
+                        <Border Grid.Row="2" Background="#1C1F26" CornerRadius="12" Padding="12" Margin="0,0,0,12" BorderBrush="#2A2F3A" BorderThickness="1">
+                            <StackPanel Spacing="8">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <TextBlock Text="TỔNG THANH TOÁN:" FontSize="13" Foreground="#9CA3AF" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Text="{Binding CartTotal, Converter={StaticResource CurrencyConv}}"
+                                               FontWeight="Bold" FontSize="24" Foreground="#F59E0B" />
+                                </Grid>
+
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <TextBlock Text="Khách đưa:" FontSize="13" Foreground="#9CA3AF" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Text="{Binding CustomerPaid, Converter={StaticResource CurrencyConv}}"
+                                               FontWeight="Bold" FontSize="16" Foreground="#F3F4F6" />
+                                </Grid>
+
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <TextBlock Text="Tiền thối lại:" FontSize="13" Foreground="#9CA3AF" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Text="{Binding ChangeDue, Converter={StaticResource CurrencyConv}}"
+                                               FontWeight="Bold" FontSize="18" Foreground="#10B981" />
+                                </Grid>
+
+                                <!-- Nút tiền chẵn nhanh -->
+                                <UniformGrid Columns="5" Margin="0,4,0,0">
+                                    <Button Command="{Binding SetExactCashCommand}" Margin="2" Padding="4" FontSize="11" Background="#262A34">Đúng tiền</Button>
+                                    <Button Command="{Binding SetQuickCashCommand}" CommandParameter="50000" Margin="2" Padding="4" FontSize="11" Background="#262A34">50k</Button>
+                                    <Button Command="{Binding SetQuickCashCommand}" CommandParameter="100000" Margin="2" Padding="4" FontSize="11" Background="#262A34">100k</Button>
+                                    <Button Command="{Binding SetQuickCashCommand}" CommandParameter="200000" Margin="2" Padding="4" FontSize="11" Background="#262A34">200k</Button>
+                                    <Button Command="{Binding SetQuickCashCommand}" CommandParameter="500000" Margin="2" Padding="4" FontSize="11" Background="#262A34">500k</Button>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- CHECKOUT ACTION BUTTONS -->
+                        <Grid Grid.Row="3" ColumnDefinitions="*, *">
+                            <Button Grid.Column="0" Command="{Binding CheckoutCashCommand}" Height="60" Margin="0,0,6,0"
+                                    Background="#10B981" Foreground="#000000" FontWeight="Bold" FontSize="16" CornerRadius="10">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="💵 TIỀN MẶT (F12)" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" />
+                                    <TextBlock Text="Thu tiền &amp; In hóa đơn" FontSize="11" Opacity="0.85" HorizontalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button Grid.Column="1" Command="{Binding CheckoutVietQrCommand}" Height="60" Margin="6,0,0,0"
+                                    Background="#F59E0B" Foreground="#000000" FontWeight="Bold" FontSize="16" CornerRadius="10">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="📱 QUÉT VIETQR" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" />
+                                    <TextBlock Text="Tạo mã QR thanh toán" FontSize="11" Opacity="0.85" HorizontalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- TAB 1: LỊCH SỬ ĐƠN HÀNG -->
+            <Border IsVisible="{Binding SelectedTabIndex, Converter={StaticResource IntVisConv}, ConverterParameter=1}"
+                    Padding="24">
+                <Grid RowDefinitions="Auto, *">
+                    <TextBlock Grid.Row="0" Text="LỊCH SỬ CÁC HÓA ĐƠN TRONG CA" FontWeight="Bold" FontSize="20" Foreground="#F59E0B" Margin="0,0,0,16" />
+
+                    <ScrollViewer Grid.Row="1">
+                        <ItemsControl ItemsSource="{Binding CompletedOrders}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="models:OrderReceipt">
+                                    <Border Background="#1C1F26" CornerRadius="12" Padding="16" Margin="0,0,0,12" BorderBrush="#2A2F3A" BorderThickness="1">
+                                        <Grid ColumnDefinitions="120, *, 150, 150">
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="{Binding OrderCode}" FontWeight="Bold" FontSize="18" Foreground="#F59E0B" />
+                                                <TextBlock Text="{Binding OrderType}" FontSize="12" Foreground="#10B981" />
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="{Binding CreatedAt, StringFormat='Thời gian: {0:dd/MM/yyyy HH:mm:ss}'}" FontSize="13" Foreground="#9CA3AF" />
+                                                <TextBlock Text="{Binding PaymentMethod, StringFormat='Hình thức: {0}'}" FontSize="13" Foreground="#E5E7EB" />
+                                                <TextBlock Text="{Binding Items.Count, StringFormat='Số lượng: {0} món'}" FontSize="12" Foreground="#9CA3AF" />
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="2" HorizontalAlignment="Right">
+                                                <TextBlock Text="TỔNG TIỀN" FontSize="11" Foreground="#9CA3AF" HorizontalAlignment="Right" />
+                                                <TextBlock Text="{Binding TotalAmount, Converter={StaticResource CurrencyConv}}"
+                                                           FontWeight="Bold" FontSize="18" Foreground="#F59E0B" HorizontalAlignment="Right" />
+                                            </StackPanel>
+
+                                            <StackPanel Grid.Column="3" HorizontalAlignment="Right">
+                                                <TextBlock Text="Khách đưa:" FontSize="11" Foreground="#9CA3AF" HorizontalAlignment="Right" />
+                                                <TextBlock Text="{Binding CustomerPaid, Converter={StaticResource CurrencyConv}}" FontSize="13" HorizontalAlignment="Right" />
+                                                <TextBlock Text="{Binding ChangeDue, StringFormat='Thối: {0:N0}đ'}" FontSize="12" Foreground="#10B981" HorizontalAlignment="Right" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+            <!-- TAB 2: THỐNG KÊ CA BÁN HÀNG -->
+            <Border IsVisible="{Binding SelectedTabIndex, Converter={StaticResource IntVisConv}, ConverterParameter=2}"
+                    Padding="24">
+                <StackPanel Spacing="20">
+                    <TextBlock Text="BÁO CÁO TỔNG KẾT CA BÁN HÀNG" FontWeight="Bold" FontSize="20" Foreground="#F59E0B" />
+
+                    <Grid ColumnDefinitions="*, *, *">
+                        <Border Grid.Column="0" Margin="0,0,10,0" Background="#1C1F26" CornerRadius="16" Padding="20" BorderBrush="#2A2F3A" BorderThickness="1">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="TỔNG DOANH THU" FontSize="13" Foreground="#9CA3AF" />
+                                <TextBlock Text="{Binding TotalShiftRevenue, Converter={StaticResource CurrencyConv}}"
+                                           FontWeight="Bold" FontSize="28" Foreground="#F59E0B" />
+                                <TextBlock Text="Đã thu đầy đủ" FontSize="11" Foreground="#10B981" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="1" Margin="5,0,5,0" Background="#1C1F26" CornerRadius="16" Padding="20" BorderBrush="#2A2F3A" BorderThickness="1">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="TỔNG SỐ ĐƠN HÀNG" FontSize="13" Foreground="#9CA3AF" />
+                                <TextBlock Text="{Binding TotalShiftOrders}"
+                                           FontWeight="Bold" FontSize="28" Foreground="#10B981" />
+                                <TextBlock Text="Đơn hoàn thành" FontSize="11" Foreground="#9CA3AF" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="2" Margin="10,0,0,0" Background="#1C1F26" CornerRadius="16" Padding="20" BorderBrush="#2A2F3A" BorderThickness="1">
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="TRẠNG THÁI MÁY IN" FontSize="13" Foreground="#9CA3AF" />
+                                <TextBlock Text="SẴN SÀNG" FontWeight="Bold" FontSize="24" Foreground="#10B981" />
+                                <TextBlock Text="ESC/POS 58mm/80mm OK" FontSize="11" Foreground="#9CA3AF" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- CHECKOUT SUCCESS MODAL (OVERLAY) -->
+            <Border IsVisible="{Binding IsCheckoutModalOpen}"
+                    Background="#D00A0D12" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Border Background="#1A1D24" CornerRadius="16" Width="720" MaxHeight="650"
+                        BorderBrush="#F59E0B" BorderThickness="1" Padding="24"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Grid RowDefinitions="Auto, *, Auto">
+                        <!-- Modal Title -->
+                        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,0,0,16">
+                            <TextBlock Text="{Binding PaymentModalTitle}" FontWeight="Bold" FontSize="18" Foreground="#F59E0B" />
+                            <Button Grid.Column="1" Command="{Binding CloseCheckoutModalCommand}" Background="#2E3440" Padding="10,4" FontSize="12">✖ Đóng</Button>
+                        </Grid>
+
+                        <!-- Modal Content (Receipt and Kitchen Ticket) -->
+                        <Grid Grid.Row="1" ColumnDefinitions="*, *">
+                            <Border Grid.Column="0" Margin="0,0,8,0" Background="#111317" CornerRadius="8" Padding="12" BorderBrush="#2E3440" BorderThickness="1">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <TextBlock Text="{Binding CurrentReceiptText}" FontFamily="Courier New, Consolas, Monospace" FontSize="11" Foreground="#E5E7EB" />
+                                </ScrollViewer>
+                            </Border>
+
+                            <Border Grid.Column="1" Margin="8,0,0,0" Background="#111317" CornerRadius="8" Padding="12" BorderBrush="#2E3440" BorderThickness="1">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <TextBlock Text="{Binding CurrentKitchenTicketText}" FontFamily="Courier New, Consolas, Monospace" FontSize="11" Foreground="#10B981" />
+                                </ScrollViewer>
+                            </Border>
+                        </Grid>
+
+                        <!-- Action Buttons -->
+                        <Grid Grid.Row="2" ColumnDefinitions="*, *" Margin="0,16,0,0">
+                            <TextBlock Grid.Column="0" Text="✅ Đã gửi lệnh in nhiệt thành công!" Foreground="#10B981" VerticalAlignment="Center" />
+                            <Button Grid.Column="1" Command="{Binding CloseCheckoutModalCommand}" Height="45"
+                                    Background="#F59E0B" Foreground="#000000" FontWeight="Bold" FontSize="15" CornerRadius="8">
+                                TIẾP TỤC ĐƠN TIẾP THEO
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="BotChienTanSonNhi.Android/BotChienTanSonNhi.Android.csproj">
+    <Deploy />
+  </Project>
+  <Project Path="BotChienTanSonNhi.Desktop/BotChienTanSonNhi.Desktop.csproj" />
+  <Project Path="BotChienTanSonNhi/BotChienTanSonNhi.csproj" />
+</Solution>
